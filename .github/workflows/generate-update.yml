@@ -1,1 +1,33 @@
+name: Generate update.xml for AutoUpdater.NET
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Set version from tag
+      run: echo "VERSION=${GITHUB_REF##*/v}" >> $GITHUB_ENV
+
+    - name: Create update.xml
+      run: |
+        mkdir public
+        echo '<?xml version="1.0" encoding="UTF-8"?>' > public/update.xml
+        echo '<item>' >> public/update.xml
+        echo "  <version>${VERSION}</version>" >> public/update.xml
+        echo "  <url>https://github.com/${{ github.repository }}/releases/download/v${VERSION}/FinanzAppSetup.exe</url>" >> public/update.xml
+        echo '  <mandatory>false</mandatory>' >> public/update.xml
+        echo '</item>' >> public/update.xml
+
+    - name: Deploy update.xml to GitHub Pages
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./public
 
