@@ -15,8 +15,10 @@ jobs:
       - name: Set version and filename from tag
         id: vars
         run: |
-          VERSION="${GITHUB_REF##*/v}"
-          echo "VERSION=$VERSION" >> $GITHUB_ENV
+          RAW_VERSION="${GITHUB_REF##*/}"         
+          CLEAN_VERSION="${RAW_VERSION#v}"       
+          CLEAN_VERSION="${CLEAN_VERSION#V}"
+          echo "VERSION=$CLEAN_VERSION" >> $GITHUB_ENV
           echo "FILENAME=FinanzAppSetup.exe" >> $GITHUB_ENV
 
       - name: Create update.xml
