@@ -13,7 +13,11 @@ jobs:
       uses: actions/checkout@v3
 
     - name: Set version from tag
-      run: echo "VERSION=${GITHUB_REF##*/v}" >> $GITHUB_ENV
+        id: vars
+        run: |
+          VERSION="${GITHUB_REF##*/v}"
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+          echo "FILENAME=FinanzAppSetup.exe" >> $GITHUB_ENV
 
     - name: Create update.xml
       run: |
