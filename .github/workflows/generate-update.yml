@@ -9,30 +9,30 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-    - name: Set version from tag
+      - name: Set version and filename from tag
         id: vars
         run: |
           VERSION="${GITHUB_REF##*/v}"
           echo "VERSION=$VERSION" >> $GITHUB_ENV
           echo "FILENAME=FinanzAppSetup.exe" >> $GITHUB_ENV
 
-    - name: Create update.xml
-      run: |
-        mkdir public
-        echo '<?xml version="1.0" encoding="UTF-8"?>' > public/update.xml
-        echo '<item>' >> public/update.xml
-        echo "  <version>${VERSION}</version>" >> public/update.xml
-        echo "  <url>https://github.com/${{ github.repository }}/releases/download/v${VERSION}/FinanzAppSetup.exe</url>" >> public/update.xml
-        echo '  <mandatory>false</mandatory>' >> public/update.xml
-        echo '</item>' >> public/update.xml
+      - name: Create update.xml
+        run: |
+          echo "<item>" > update.xml
+          echo "  <version>${{ env.VERSION }}</version>" >> update.xml
+          echo "  <url>https://github.com/${{ github.repository }}/releases/download/v${{ env.VERSION }}/${{ env.FILENAME }}</url>" >> update.xml
+          echo "  <mandatory>false</mandatory>" >> update.xml
+          echo "</item>" >> update.xml
 
-    - name: Deploy update.xml to GitHub Pages
-      uses: peaceiris/actions-gh-pages@v3
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: ./public
- 
+      - name: Push update.xml to gh-pages branch
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./
+          publish_branch: gh-pages
+          force_orphan: true
+
 
